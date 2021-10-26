@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, Menu } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -11,11 +11,18 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 async function createWindow () {
+  // 隐藏默认菜单
+  Menu.setApplicationMenu(null)
   // Create the browser window.
   const win = new BrowserWindow({
     width: 900,
     height: 550,
-    resizable: false,
+    minWidth: 900,
+    minHeight: 550,
+    maxHeight: 550,
+    autoHideMenuBar: true,
+    // frame: false, // 使用后会导致主菜单,最小化,关闭直接消失
+    // resizable: false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
