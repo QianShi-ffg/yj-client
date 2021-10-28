@@ -17,9 +17,9 @@
       <div class="top">
         <div class="header"></div>
         <div class="content">
-          <ul>
-            <li v-for="(item, i) in messageList" :key="item">
-              <span :id="`spanText${i}`">{{ show(item, i) }}</span>
+          <ul ref="ul">
+            <li v-for="(item, i) in messageList" :class="item.uuid === uuid ? 'right' : 'left'" :key="`item${i}`">
+              <span :id="`spanText${i}`">{{ show(item.text, i) }}</span>
             </li>
           </ul>
         </div>
@@ -40,7 +40,6 @@
         ></el-input> -->
         <div
           id="input"
-          :value="input"
           contenteditable="true"
           style="width: 100%; min-hight: 70px; max-height: 100px"
           :spellcheck="false"
@@ -59,13 +58,17 @@ export default {
     return {
       textarea: '',
       messageList: [],
-      socket: null
+      socket: null,
+      scrollTop: null,
+      uuid: null
     }
   },
   mounted() {
-    this.socket = new WebSocket('ws://192.73.0.211:3010')
+    // this.socket = new WebSocket('ws://192.73.0.211:3010')
+    this.socket = new WebSocket('ws://188.131.164.41:3010')
     this.text = document.getElementById('input')
     this.init()
+    this.uuid = `15666${parseInt(Math.random() * 10000000)}`
   },
   methods: {
     init() {
@@ -73,27 +76,39 @@ export default {
         console.log('socket is open', event)
       })
 
-      this.socket.addEventListener('message', (event) => {
-        this.refresh(JSON.parse(event.data).text)
+      this.socket.addEventListener('message', async (event) => {
+        await this.refresh(JSON.parse(event.data))
+        this.$nextTick(() => {
+          const ulS = document.getElementsByTagName('ul')[0].scrollHeight
+          if (ulS > 307) {
+            document.getElementsByClassName('content')[0].scrollTop = ulS
+          }
+        })
       })
     },
     submit() {
       // let text = document.getElementById('input')
-      console.log(this.text.innerHTML)
       this.textarea = this.text.innerHTML
-      this.socket.send(JSON.stringify({ text: this.textarea }))
+      this.socket.send(JSON.stringify({ text: this.textarea, uuid: this.uuid }))
     },
     refresh(value) {
-      // if (this.textarea !== '') {
-      //   return
-      // }
+      console.log(value)
       this.messageList.push(value)
       this.text.innerHTML = ''
+      console.log(233666)
     },
     show(value, i) {
       this.$nextTick(() => {
-        console.log(document.getElementById(`spanText${i}`))
+        let childList = []
         document.getElementById(`spanText${i}`).innerHTML = value
+        childList = [...document.getElementById(`spanText${i}`).children]
+        childList.forEach((item) => {
+          if (item.tagName === 'IMG') {
+            if (item.clientWidth > document.getElementById(`spanText${i}`).clientWidth) {
+              item.style.width = '100%'
+            }
+          }
+        })
       })
     }
   }
@@ -145,6 +160,7 @@ export default {
     position: relative;
     width: calc(100% - 200px);
     height: 100%;
+    overflow: hidden;
     // background: #ccc;
     .top {
       height: 70%;
@@ -161,30 +177,49 @@ export default {
       .content {
         width: 100%;
         height: calc(100% - 50px);
+        overflow-y: auto;
+        background: #f5f5f5;
+        &::-webkit-scrollbar {
+          display: none;
+        }
         ul {
+          // display: inline-block;
           width: 100%;
-          height: 100%;
-          overflow-y: auto;
+          // height: 100%;
+          min-height: 307px;
           padding: 0;
           margin: 0;
-          background: #f5f5f5;
-          &::-webkit-scrollbar {
-            display: none;
-          }
+          // background: #f5f5f5;
+
           li {
             // display: block;
             list-style: none;
             margin: 10px 0;
             padding-left: 20px;
-            text-align: left;
+            // text-align: left;
             span {
               display: inline-block;
+              // width: 65%;
+              max-width: 65%;
               height: 100%;
               padding: 10px 12px;
               text-align: left;
               background: #fff;
               border-radius: 5px;
               box-shadow: 0 0 1px 1px rgb(238, 238, 238);
+              word-wrap: break-word;
+              word-break: normal;
+              overflow: hidden;
+            }
+            &.left {
+              text-align: left;
+            }
+            &.right {
+              padding-right: 20px;
+              text-align: right;
+              span {
+                background: #9eea6a;
+              }
             }
           }
         }
