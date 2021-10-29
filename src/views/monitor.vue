@@ -307,6 +307,7 @@ export default {
             width: 100%;
             list-style: none;
             margin: 10px 0;
+            border: none;
             // padding-left: 20px;
             // text-align: left;
             span.spansty {
