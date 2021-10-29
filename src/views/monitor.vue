@@ -18,8 +18,14 @@
         <div class="header"></div>
         <div class="content">
           <ul ref="ul">
-            <li v-for="(item, i) in messageList" :class="item.uuid === uuid ? 'right' : 'left'" :key="`item${i}`">
-              <span :id="`spanText${i}`">{{ show(item.text, i) }}</span>
+            <li
+              v-for="(item, i) in messageList"
+              :class="item.uuid === uuid ? 'right' : 'left'"
+              :key="`item${i}`"
+              :id="`liText${i}`"
+              v-html="item.text"
+            >
+              <!-- {{ show(item, i) }} -->
             </li>
           </ul>
         </div>
@@ -60,7 +66,14 @@ export default {
       messageList: [],
       socket: null,
       scrollTop: null,
-      uuid: null
+      uuid: null,
+      text: null,
+      liWidth: null
+    }
+  },
+  watch: {
+    liWidth(newVal) {
+      console.log(newVal)
     }
   },
   mounted() {
@@ -85,30 +98,126 @@ export default {
           }
         })
       })
+
+      window.onresize = () => {
+        return (() => {
+          console.log(document.getElementsByTagName('ul'))
+          const li = document.getElementsByTagName('ul')[0]
+          this.liWidth = li.clientWidth - 40
+        })()
+      }
     },
     submit() {
-      // let text = document.getElementById('input')
-      this.textarea = this.text.innerHTML
-      this.socket.send(JSON.stringify({ text: this.textarea, uuid: this.uuid }))
+      let list = [...this.text.childNodes]
+      console.log(list)
+      list.map((item) => {
+        console.log(item.nodeValue)
+        if (item.nodeType === 3) {
+          this.socket.send(JSON.stringify({ text: item.nodeValue, uuid: this.uuid, nodeType: item.nodeType }))
+        } else if (item.nodeType === 1) {
+          this.socket.send(
+            JSON.stringify({
+              text: item.src,
+              uuid: this.uuid,
+              nodeType: item.nodeType,
+              tagName: item.tagName,
+              style: { width: item.clientWidth, height: item.clientHeight }
+            })
+          )
+        }
+      })
     },
-    refresh(value) {
-      console.log(value)
+    async refresh(value) {
+      await this.show(value)
       this.messageList.push(value)
       this.text.innerHTML = ''
-      console.log(233666)
     },
-    show(value, i) {
+    show(value) {
+      console.log(value)
+      let spanSty = [
+        'display: inline-block;',
+        'max-width: 65%;',
+        'height: 100%;',
+        'padding: 10px 12px;',
+        'text-align: left;',
+        'border-radius: 5px;',
+        'box-shadow: 0 0 1px 1px rgb(238, 238, 238);',
+        'word-wrap: break-word;',
+        'word-break: normal;',
+        'overflow: hidden;'
+      ]
+      if (value.uuid === this.uuid) {
+        spanSty.push('background: #9eea6a;')
+      } else {
+        spanSty.push('background: #fff;')
+      }
+      if (value.nodeType === 3) {
+        value.text = `<span style="${spanSty.join().replaceAll(',', '')}">${value.text}</span>`
+      } else if (value.nodeType === 1) {
+        if (value.tagName === 'IMG') {
+          value.text = `<img src=${value.text} width="${value.style.width > 180 ? 180 : value.style.width}px;"></img>`
+        }
+      }
       this.$nextTick(() => {
-        let childList = []
-        document.getElementById(`spanText${i}`).innerHTML = value
-        childList = [...document.getElementById(`spanText${i}`).children]
-        childList.forEach((item) => {
-          if (item.tagName === 'IMG') {
-            if (item.clientWidth > document.getElementById(`spanText${i}`).clientWidth) {
-              item.style.width = '100%'
-            }
-          }
-        })
+        //   let childList = []
+        //   childList = [...document.getElementsByTagName('img')[0].children]
+        //   childList.forEach((item) => {
+        //     console.log(item.tagName)
+        //     if (item.tagName === 'IMG') {
+        //       if (item.clientWidth > document.getElementById(`liText${i}`).clientWidth) {
+        //         item.style.width = '55%'
+        //       }
+        //     } else if (item.tagName === 'SPAN') {
+        //       item.style.display = 'inline-block'
+        //       item.style.maxWidth = '65%'
+        //       item.style.height = '100%'
+        //       item.style.padding = '10px 12px'
+        //       item.style.textAlign = 'left'
+        //       item.style.borderRadius = '5px'
+        //       item.style.boxShadow = '0 0 1px 1px rgb(238, 238, 238)'
+        //       item.style.wordWrap = 'break-word'
+        //       item.style.wordBreak = 'normal'
+        //       item.style.overflow = 'hidden'
+        //       if (value.uuid === this.uuid) {
+        //         item.style.background = '#9eea6a'
+        //       } else {
+        //         item.style.background = '#fff'
+        //       }
+        //     }
+        //   })
+        // let childList = []
+        // console.log(value.text)
+        // if (value.nodeType === 3) {
+        //   document.getElementById(`liText${i}`).innerHTML = `<span id="spanText${i}">${value.text}</span>`
+        //   // this.textarea = item
+        // } else if (value.nodeType === 1) {
+        //   document.getElementById(`liText${i}`).innerHTML = value.text
+        // }
+        // childList = [...document.getElementById(`liText${i}`).children]
+        // childList.forEach((item) => {
+        //   console.log(item.tagName)
+        //   if (item.tagName === 'IMG') {
+        //     if (item.clientWidth > document.getElementById(`liText${i}`).clientWidth) {
+        //       item.style.width = '55%'
+        //     }
+        //   } else if (item.tagName === 'SPAN') {
+        //     item.style.display = 'inline-block'
+        //     item.style.maxWidth = '65%'
+        //     item.style.height = '100%'
+        //     item.style.padding = '10px 12px'
+        //     item.style.textAlign = 'left'
+        //     item.style.borderRadius = '5px'
+        //     item.style.boxShadow = '0 0 1px 1px rgb(238, 238, 238)'
+        //     item.style.wordWrap = 'break-word'
+        //     item.style.wordBreak = 'normal'
+        //     item.style.overflow = 'hidden'
+        //     if (value.uuid === this.uuid) {
+        //       item.style.background = '#9eea6a'
+        //     } else {
+        //       item.style.background = '#fff'
+        //     }
+        //   }
+        // })
       })
     }
   }
@@ -189,15 +298,18 @@ export default {
           min-height: 307px;
           padding: 0;
           margin: 0;
+          box-sizing: border-box;
+          padding: 0 20px;
           // background: #f5f5f5;
 
           li {
             // display: block;
+            width: 100%;
             list-style: none;
             margin: 10px 0;
-            padding-left: 20px;
+            // padding-left: 20px;
             // text-align: left;
-            span {
+            span.spansty {
               display: inline-block;
               // width: 65%;
               max-width: 65%;
@@ -213,12 +325,37 @@ export default {
             }
             &.left {
               text-align: left;
+              span.spansty {
+                display: inline-block;
+                // width: 65%;
+                max-width: 65%;
+                height: 100%;
+                padding: 10px 12px;
+                text-align: left;
+                background: #fff;
+                border-radius: 5px;
+                box-shadow: 0 0 1px 1px rgb(238, 238, 238);
+                word-wrap: break-word;
+                word-break: normal;
+                overflow: hidden;
+              }
             }
             &.right {
               padding-right: 20px;
               text-align: right;
-              span {
-                background: #9eea6a;
+              span.spansty {
+                display: inline-block;
+                // width: 65%;
+                max-width: 65%;
+                height: 100%;
+                padding: 10px 12px;
+                text-align: left;
+                background: #fff;
+                border-radius: 5px;
+                box-shadow: 0 0 1px 1px rgb(238, 238, 238);
+                word-wrap: break-word;
+                word-break: normal;
+                overflow: hidden;
               }
             }
           }
@@ -293,5 +430,19 @@ export default {
       }
     }
   }
+}
+.spansty {
+  display: inline-block;
+  // width: 65%;
+  max-width: 65%;
+  height: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 1px 1px rgb(238, 238, 238);
+  word-wrap: break-word;
+  word-break: normal;
+  overflow: hidden;
 }
 </style>
