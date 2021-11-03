@@ -36,30 +36,36 @@
         <img class="shot" :src="require('assets/icon/screenShot.svg')" alt="" />
         <img class="video" :src="require('assets/icon/videoCall.svg')" alt="" />
       </div>
-      <div class="bottom">
-        <!-- <el-input
+      <chatInputVue :uuid="uuid" :clean="clean" @submit="submit" @textClean="textClean"></chatInputVue>
+      <!-- <div class="bottom"> -->
+      <!-- <el-input
           type="textarea"
           v-model="textarea"
           placeholder=""
           :autosize="{ minRows: 2, maxRows: 3 }"
           :spellcheck="false"
         ></el-input> -->
-        <div
+      <!-- <div
           id="input"
-          contenteditable="true"
+          :contenteditable="true"
+          @paste.prevent="chatPaste($event)"
           style="width: 100%; min-hight: 70px; max-height: 100px"
           :spellcheck="false"
         ></div>
         <div class="btn">
           <el-button type="success" size="mini" @click="submit">发送</el-button>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
+import chatInputVue from '../components/chatInput.vue'
 export default {
+  components: {
+    chatInputVue
+  },
   data() {
     return {
       textarea: '',
@@ -67,8 +73,8 @@ export default {
       socket: null,
       scrollTop: null,
       uuid: null,
-      text: null,
-      liWidth: null
+      liWidth: null,
+      clean: false
     }
   },
   watch: {
@@ -77,9 +83,8 @@ export default {
     }
   },
   mounted() {
-    // this.socket = new WebSocket('ws://192.73.0.211:3010')
-    this.socket = new WebSocket('ws://188.131.164.41:3010')
-    this.text = document.getElementById('input')
+    this.socket = new WebSocket('ws://192.73.0.211:3010')
+    // this.socket = new WebSocket('ws://188.131.164.41:3010')
     this.init()
     this.uuid = `15666${parseInt(Math.random() * 10000000)}`
   },
@@ -107,30 +112,34 @@ export default {
         })()
       }
     },
-    submit() {
-      let list = [...this.text.childNodes]
-      console.log(list)
-      list.map((item) => {
-        console.log(item.nodeValue)
-        if (item.nodeType === 3) {
-          this.socket.send(JSON.stringify({ text: item.nodeValue, uuid: this.uuid, nodeType: item.nodeType }))
-        } else if (item.nodeType === 1) {
-          this.socket.send(
-            JSON.stringify({
-              text: item.src,
-              uuid: this.uuid,
-              nodeType: item.nodeType,
-              tagName: item.tagName,
-              style: { width: item.clientWidth, height: item.clientHeight }
-            })
-          )
-        }
+    submit(value) {
+      console.log(value)
+      value.map((item) => {
+        this.socket.send(JSON.stringify(item))
       })
+
+      // let list = [...this.text.childNodes]
+      // console.log(list)
+      // list.map((item) => {
+      //   console.log(item.nodeValue)
+      //   if (item.nodeType === 3) {
+      //   } else if (item.nodeType === 1) {
+      //     this.socket.send(
+      //       JSON.stringify({
+      //         text: item.src || item.innerText,
+      //         uuid: this.uuid,
+      //         nodeType: item.nodeType,
+      //         tagName: item.tagName,
+      //         style: { width: item.clientWidth, height: item.clientHeight }
+      //       })
+      //     )
+      //   }
+      // })
     },
     async refresh(value) {
       await this.show(value)
       this.messageList.push(value)
-      this.text.innerHTML = ''
+      this.clean = true
     },
     show(value) {
       console.log(value)
@@ -154,71 +163,11 @@ export default {
       if (value.nodeType === 3) {
         value.text = `<span style="${spanSty.join().replaceAll(',', '')}">${value.text}</span>`
       } else if (value.nodeType === 1) {
-        if (value.tagName === 'IMG') {
-          value.text = `<img src=${value.text} width="${value.style.width > 180 ? 180 : value.style.width}px;"></img>`
-        }
+        value.text = `<img src=${value.text} width="${value.style.width > 180 ? 180 : value.style.width}px;"></img>`
       }
-      this.$nextTick(() => {
-        //   let childList = []
-        //   childList = [...document.getElementsByTagName('img')[0].children]
-        //   childList.forEach((item) => {
-        //     console.log(item.tagName)
-        //     if (item.tagName === 'IMG') {
-        //       if (item.clientWidth > document.getElementById(`liText${i}`).clientWidth) {
-        //         item.style.width = '55%'
-        //       }
-        //     } else if (item.tagName === 'SPAN') {
-        //       item.style.display = 'inline-block'
-        //       item.style.maxWidth = '65%'
-        //       item.style.height = '100%'
-        //       item.style.padding = '10px 12px'
-        //       item.style.textAlign = 'left'
-        //       item.style.borderRadius = '5px'
-        //       item.style.boxShadow = '0 0 1px 1px rgb(238, 238, 238)'
-        //       item.style.wordWrap = 'break-word'
-        //       item.style.wordBreak = 'normal'
-        //       item.style.overflow = 'hidden'
-        //       if (value.uuid === this.uuid) {
-        //         item.style.background = '#9eea6a'
-        //       } else {
-        //         item.style.background = '#fff'
-        //       }
-        //     }
-        //   })
-        // let childList = []
-        // console.log(value.text)
-        // if (value.nodeType === 3) {
-        //   document.getElementById(`liText${i}`).innerHTML = `<span id="spanText${i}">${value.text}</span>`
-        //   // this.textarea = item
-        // } else if (value.nodeType === 1) {
-        //   document.getElementById(`liText${i}`).innerHTML = value.text
-        // }
-        // childList = [...document.getElementById(`liText${i}`).children]
-        // childList.forEach((item) => {
-        //   console.log(item.tagName)
-        //   if (item.tagName === 'IMG') {
-        //     if (item.clientWidth > document.getElementById(`liText${i}`).clientWidth) {
-        //       item.style.width = '55%'
-        //     }
-        //   } else if (item.tagName === 'SPAN') {
-        //     item.style.display = 'inline-block'
-        //     item.style.maxWidth = '65%'
-        //     item.style.height = '100%'
-        //     item.style.padding = '10px 12px'
-        //     item.style.textAlign = 'left'
-        //     item.style.borderRadius = '5px'
-        //     item.style.boxShadow = '0 0 1px 1px rgb(238, 238, 238)'
-        //     item.style.wordWrap = 'break-word'
-        //     item.style.wordBreak = 'normal'
-        //     item.style.overflow = 'hidden'
-        //     if (value.uuid === this.uuid) {
-        //       item.style.background = '#9eea6a'
-        //     } else {
-        //       item.style.background = '#fff'
-        //     }
-        //   }
-        // })
-      })
+    },
+    textClean(value) {
+      this.clean = value
     }
   }
 }
@@ -389,44 +338,6 @@ export default {
         }
         &.shot {
           left: 83px;
-        }
-      }
-    }
-    .bottom {
-      display: flex;
-      box-sizing: border-box;
-      padding: 0 10px 0;
-      margin-top: 30px;
-      height: 115px;
-      #input {
-        height: 100px;
-        overflow-y: auto;
-        border: none;
-        resize: none;
-        font-size: 18px;
-        font-weight: 400;
-        text-align: left;
-        padding: 0 10px 0 5px;
-        box-sizing: border-box;
-        line-height: 30px;
-        &::-webkit-scrollbar {
-          display: none;
-        }
-        &:focus-visible {
-          outline: none;
-        }
-      }
-      .btn {
-        position: relative;
-        width: 100px;
-        height: 100%;
-        .el-button {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 60px;
-          height: 27px;
-          margin: 0 10px 0 10px;
         }
       }
     }

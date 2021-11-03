@@ -12,7 +12,7 @@ protocol.registerSchemesAsPrivileged([
 
 async function createWindow () {
   // 隐藏默认菜单
-  Menu.setApplicationMenu(null)
+  // Menu.setApplicationMenu(null)
   // Create the browser window.
   const win = new BrowserWindow({
     width: 900,
@@ -20,7 +20,7 @@ async function createWindow () {
     minWidth: 900,
     minHeight: 550,
     maxHeight: 550,
-    autoHideMenuBar: true,
+    // autoHideMenuBar: true,
     // frame: false, // 使用后会导致主菜单,最小化,关闭直接消失
     // resizable: false,
     webPreferences: {
