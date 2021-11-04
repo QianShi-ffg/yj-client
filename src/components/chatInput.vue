@@ -1,16 +1,10 @@
 <template>
   <div class="bottom">
-    <!-- <el-input
-          type="textarea"
-          v-model="textarea"
-          placeholder=""
-          :autosize="{ minRows: 2, maxRows: 3 }"
-          :spellcheck="false"
-        ></el-input> -->
     <div
       id="input"
       :contenteditable="true"
       @paste.prevent="chatPaste($event)"
+      @keydown="keyDown($event)"
       style="width: 100%; min-hight: 70px; max-height: 100px"
       :spellcheck="false"
     ></div>
@@ -32,7 +26,8 @@ export default {
       imgShowWidth: 50,
       imgShowHeight: 50,
       dataUrl: '',
-      textList: []
+      textList: [],
+      keyList: []
     }
   },
   watch: {
@@ -53,6 +48,25 @@ export default {
         return
       } else {
         await this.pasteImageFile(event.clipboardData)
+      }
+    },
+    keyDown(event) {
+      // const childNodes = event.target.childNodes
+      // this.emitChange(childNodes)
+      if (event.keyCode === 13) {
+        event.cancelBubble = true
+        event.preventDefault()
+        event.stopPropagation()
+        if (event.keyCode === 13) {
+          if (event.shiftKey) {
+            const oBr = document.createElement('br')
+            this.cursorInsert(oBr)
+          } else {
+            this.beforeSubmit()
+          }
+          // this.keyList = []
+          console.log(this.keyList.join())
+        }
       }
     },
     // 去格式粘贴 文本
@@ -103,26 +117,26 @@ export default {
       return firstSelectedImage
     },
     // 光标处插入节点
-    cursorInsert(node) {
+    async cursorInsert(node) {
       // 获取光标范围
       const selObj = window.getSelection()
+      console.log(selObj, selObj.toString(), selObj.getRangeAt(0), 89999)
       const range = selObj.getRangeAt(0)
       // 光标处插入节点
       range.insertNode(node)
       // 取消insert node 后的选中状态，将光标恢复到 insert node 后面
-      range.collapse(false)
+      // range.collapse(false)
+      selObj.collapseToEnd()
     },
     beforeSubmit() {
       let list = [...this.textarea.childNodes]
       console.log(list)
       this.textList = []
       list.map((item) => {
-        if (item.nodeType === 3) {
-          console.log(this.textList, 2333)
+        if (item.nodeType === 3 && item.nodeValue) {
           const lastMsg = this.textList[this.textList.length - 1]
-          console.log(lastMsg, 333444)
           if (lastMsg?.type === 'text') {
-            lastMsg.content += item.nodeValue
+            lastMsg.text += item.nodeValue
           } else {
             this.textList.push({
               type: 'text',
@@ -134,15 +148,11 @@ export default {
         } else if (item.nodeType === 1) {
           if (item.nodeName === 'BR') {
             // 处理回车
-            console.log(this.textList, 2333)
             const lastMsg = this.textList[this.textList.length - 1]
-            console.log(lastMsg, 333444)
             if (lastMsg?.type === 'text') {
-              lastMsg.content += '\n'
+              lastMsg.text += '</br>'
             }
           } else if (item.nodeName === 'IMG') {
-            const dataset = item.dataset
-            console.log(dataset, dataset.width, dataset.height)
             this.textList.push({
               type: 'image',
               nodeType: item.nodeType,
@@ -153,7 +163,6 @@ export default {
           }
         }
       })
-      console.log(this.textList)
       this.$emit('submit', this.textList)
     }
     // emitChange(editorChildNodes) {

@@ -1,18 +1,16 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
+
+const originalPush = VueRouter.prototype.push
+
+VueRouter.prototype.push = function push (location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+
 Vue.use(VueRouter);
 
 const routes = [
-  {
-    path: "/About",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
-  },
   {
     path: "/",
     name: "monitor",
@@ -21,6 +19,17 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/monitor.vue"),
+    children: [
+      {
+        path: "/chatFrame/:id",
+        name: "chatFrame",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "about" */ "../components/chatFrame.vue"),
+      }
+    ]
   },
 ];
 
