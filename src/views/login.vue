@@ -1,0 +1,193 @@
+<template>
+  <div class="login">
+    <div class="title">
+      <i class="el-icon-close" @click="exit"></i>
+    </div>
+    <div class="body">
+      <div class="logo" style="text-align: center; margin-top: 15px">
+        <transition name="fade">
+          <img src="../assets/logo.png" width="60" height="60" v-show="showLogo" />
+        </transition>
+      </div>
+      <transition name="fade">
+        <div v-show="showFont" class="ft">微聊，是一种生活方式</div>
+      </transition>
+      <transition name="fade">
+        <div v-show="showForm">
+          <div style="margin-top: 35px">
+            <el-input v-model="user.account" placeholder="请输入账号"></el-input>
+            <el-input v-model="user.password" placeholder="请输入密码" type="password"></el-input>
+            <el-checkbox v-model="remember">下次直接登录</el-checkbox>
+            <el-button type="primary" class="submit" @click="login">登 录</el-button>
+          </div>
+          <div class="option">
+            <el-button type="text" size="mini">注册账号</el-button>
+            <el-button type="text" size="mini">忘记密码</el-button>
+            <el-button type="text" size="mini">扫码登录</el-button>
+          </div>
+        </div>
+      </transition>
+    </div>
+  </div>
+</template>
+
+<script>
+import { Remote } from '../util/preload'
+//打印remote模块
+console.log(Remote)
+export default {
+  name: 'login',
+  data() {
+    return {
+      remember: false,
+      showLogo: false,
+      showForm: false,
+      showFont: false,
+      user: {
+        account: '',
+        password: ''
+      }
+    }
+  },
+  beforeCreate() {
+    console.log(666)
+    Remote.getCurrentWebContents().closeDevTools()
+    Remote.getCurrentWindow().setSize(250, 350, false)
+  },
+  mounted() {
+    Remote.getCurrentWindow().setSize(250, 350, false)
+    this.showLogo = true
+    let that = this
+    setTimeout(() => {
+      that.showFont = true
+    }, 300)
+    setTimeout(() => {
+      that.showFont = false
+      that.showForm = true
+    }, 1500)
+  },
+  methods: {
+    exit() {
+      Remote.app.quit()
+      Remote.getCurrentWindow().hide()
+    },
+    login() {
+      console.log(this.$router)
+      // ipcRenderer.send('new-msg', 'xxx发来一一条消息')
+      this.$router.push('/index')
+    }
+  }
+}
+</script>
+
+<style scoped lang="scss">
+// @import '@/assets/style/theme';
+.login {
+  height: 100%;
+  // width: 300px;
+  // max-width: 300px;
+  // min-width: 300px;
+  overflow: hidden;
+}
+.ft {
+  position: fixed;
+  top: 250px;
+  left: 45px;
+  font-size: large;
+  color: #7f7f7f;
+  text-align: center;
+}
+::v-deep .body {
+  display: inline-block;
+  padding: 0 20px;
+  min-width: 210px;
+  height: 100%;
+  // background-color: @grayBgc;
+  .el-checkbox__label {
+    font-size: 12px;
+  }
+  .el-checkbox {
+    font-size: small;
+  }
+  .el-checkbox__input.is-checked + .el-checkbox__label {
+    // color: @primary;
+  }
+  .el-checkbox__input.is-checked .el-checkbox__inner,
+  .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    // color: @primary;
+    // background-color: @primary;
+    // border-color: @primary;
+  }
+  .submit {
+    background-color: #24db5a;
+    border-color: unset;
+
+    &:hover {
+      // background-color: @primary;
+      // border-color: @primary;
+    }
+
+    margin-top: 5px;
+    width: 100%;
+  }
+
+  .option {
+    text-align: center;
+
+    .el-button--text {
+      color: #07c160;
+    }
+  }
+
+  .el-input {
+    margin: 0 0 10px;
+
+    .el-input__inner {
+      outline: none;
+      height: 30px;
+      border: none;
+      border-bottom: 1px solid#07c160;
+      border-radius: 0;
+    }
+  }
+
+  .el-button {
+    height: 45px;
+  }
+}
+
+.title {
+  text-align: left;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  // background-color: @grayBgc;
+  -webkit-app-region: drag;
+  i {
+    cursor: pointer;
+    float: right;
+    margin-right: 10px;
+    margin-top: 10px;
+    -webkit-app-region: no-drag;
+  }
+
+  i:hover {
+    color: #07c160;
+  }
+}
+
+.el-input.is-active .el-input__inner,
+.el-input__inner:focus {
+  // border-color: @primary !important;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 3s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

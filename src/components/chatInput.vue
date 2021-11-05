@@ -142,6 +142,7 @@ export default {
               type: 'text',
               text: item.nodeValue,
               uuid: this.uuid,
+              toId: this.$route.params.id,
               nodeType: item.nodeType
             })
           }
@@ -158,6 +159,7 @@ export default {
               nodeType: item.nodeType,
               url: item.src,
               uuid: this.uuid,
+              toId: this.$route.params.id,
               style: { width: item.clientWidth, height: item.clientHeight }
             })
           }
@@ -165,41 +167,6 @@ export default {
       })
       this.$emit('submit', this.textList)
     }
-    // emitChange(editorChildNodes) {
-    //   const oldMsgList = JSON.parse(JSON.stringify(this.msgList))
-    //   this.msgList = [] // 重置
-    //   for (let i = 0; i < editorChildNodes.length; i++) {
-    //     if (editorChildNodes[i].nodeType === 1 && editorChildNodes[i].nodeName === 'BR') {
-    //       // 处理回车
-    //       const lastMsg = this.msgList[this.msgList.length - 1]
-    //       if (lastMsg?.type === 'text') {
-    //         lastMsg.content += '\n'
-    //       }
-    //     } else if (editorChildNodes[i].nodeType === 3 && editorChildNodes[i].nodeValue) {
-    //       const lastMsg = this.msgList[this.msgList.length - 1]
-    //       if (lastMsg?.type === 'text') {
-    //         lastMsg.content += editorChildNodes[i].nodeValue
-    //       } else {
-    //         this.msgList.push({
-    //           type: 'text',
-    //           content: editorChildNodes[i].nodeValue
-    //         })
-    //       }
-    //     } else if (editorChildNodes[i].nodeType === 1 && editorChildNodes[i].nodeName === 'IMG') {
-    //       const dataset = editorChildNodes[i].dataset
-    //       this.msgList.push({
-    //         type: 'image',
-    //         url: editorChildNodes[i].src,
-    //         width: +dataset.width,
-    //         height: +dataset.height
-    //       })
-    //     }
-    //   }
-    //   if (!this.msgList.length && !oldMsgList.length) {
-    //     return
-    //   }
-    //   this.$emit('change', [...this.msgList])
-    // }
   }
 }
 </script>

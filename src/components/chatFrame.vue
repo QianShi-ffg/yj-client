@@ -57,23 +57,37 @@ export default {
     this.uuid = `15666${parseInt(Math.random() * 10000000)}`
   },
   beforeRouteUpdate(to, from, next) {
-    this.socket.addEventListener('close', (event) => {
-      console.log('socket is close', event)
-    })
     console.log(to)
     this.otherId = to.params.id //路由携带的不同参数
     this.init() //在mounted调用的methods里的方法
+    this.socket.onclose = () => {
+      console.log('连接关闭')
+    }
     next()
   },
   beforeRouteLeave(to, from, next) {
     console.log(to)
-
+    this.socket.onclose = () => {
+      console.log('连接关闭')
+    }
+    // this.socket.addEventListener('close', (event) => {
+    //   console.log('socket is close', event)
+    //   this.socket.send('aa')
+    // })
     next()
   },
   methods: {
     init() {
       this.socket.addEventListener('open', (event) => {
         console.log('socket is open', event)
+        this.socket.send(
+          JSON.stringify({
+            type: 'login', // type：login表示登录 用于后端逻辑判断
+            id: this.uuid,
+            name: '',
+            icon: ''
+          })
+        )
       })
 
       this.socket.addEventListener('message', async (event) => {

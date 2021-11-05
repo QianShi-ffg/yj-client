@@ -3,6 +3,11 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 module.exports = {
+  pluginOptions: {
+    electronBuilder: {
+      nodeIntegration: true
+    }
+  },
   chainWebpack: config => {
     // config.module
     //   .rule("i18n")

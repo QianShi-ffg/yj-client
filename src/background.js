@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, Menu } from "electron";
+import { app, protocol, BrowserWindow, remote } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -15,15 +15,16 @@ async function createWindow () {
   // Menu.setApplicationMenu(null)
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 900,
-    height: 550,
-    minWidth: 900,
-    minHeight: 550,
-    maxHeight: 550,
+    width: 250,
+    height: 350,
+    // minWidth: 900,
+    // minHeight: 550,
+    // maxHeight: 550,
     // autoHideMenuBar: true,
-    // frame: false, // 使用后会导致主菜单,最小化,关闭直接消失
-    // resizable: false,
+    frame: false, // 使用后会导致主菜单,最小化,关闭直接消失
+    resizable: false,
     webPreferences: {
+      enableRemoteModule: true,
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -61,14 +62,14 @@ app.on("activate", () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
-    // Install Vue Devtools
-    try {
-      await installExtension(VUEJS_DEVTOOLS);
-    } catch (e) {
-      console.error("Vue Devtools failed to install:", e.toString());
-    }
-  }
+  // if (isDevelopment && !process.env.IS_TEST) {
+  //   // Install Vue Devtools
+  //   try {
+  //     await installExtension(VUEJS_DEVTOOLS);
+  //   } catch (e) {
+  //     console.error("Vue Devtools failed to install:", e.toString());
+  //   }
+  // }
   createWindow();
 });
 
@@ -86,3 +87,4 @@ if (isDevelopment) {
     });
   }
 }
+
