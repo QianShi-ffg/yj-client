@@ -10,13 +10,15 @@
         </transition>
       </div>
       <transition name="fade">
-        <div v-show="showFont" class="ft">微聊，是一种生活方式</div>
-      </transition>
-      <transition name="fade">
         <div v-show="showForm">
-          <div style="margin-top: 35px">
+          <div style="margin-top: 40px">
             <el-input v-model="user.account" placeholder="请输入账号"></el-input>
-            <el-input v-model="user.password" placeholder="请输入密码" type="password"></el-input>
+            <el-input
+              v-model="user.password"
+              placeholder="请输入密码"
+              type="password"
+              style="margin-top: 5px"
+            ></el-input>
             <el-checkbox v-model="remember">下次直接登录</el-checkbox>
             <el-button type="primary" class="submit" @click="login">登 录</el-button>
           </div>
@@ -32,9 +34,10 @@
 </template>
 
 <script>
-import { Remote } from '../util/preload'
+// import { Remote, IpcRenderer } from '../util/preload'
+import Electron from '../util/preload'
 //打印remote模块
-console.log(Remote)
+// console.log(IpcRenderer)
 export default {
   name: 'login',
   data() {
@@ -42,7 +45,6 @@ export default {
       remember: false,
       showLogo: false,
       showForm: false,
-      showFont: false,
       user: {
         account: '',
         password: ''
@@ -51,30 +53,26 @@ export default {
   },
   beforeCreate() {
     console.log(666)
-    Remote.getCurrentWebContents().closeDevTools()
-    Remote.getCurrentWindow().setSize(250, 350, false)
+    Electron.remote.getCurrentWebContents().closeDevTools()
+    Electron.remote.getCurrentWindow().setSize(250, 350, false)
   },
   mounted() {
-    Remote.getCurrentWindow().setSize(250, 350, false)
+    Electron.remote.getCurrentWindow().setSize(250, 350, false)
     this.showLogo = true
     let that = this
     setTimeout(() => {
-      that.showFont = true
-    }, 300)
-    setTimeout(() => {
-      that.showFont = false
       that.showForm = true
-    }, 1500)
+    }, 300)
   },
   methods: {
     exit() {
-      Remote.app.quit()
-      Remote.getCurrentWindow().hide()
+      Electron.remote.app.quit()
+      Electron.remote.getCurrentWindow().hide()
     },
     login() {
       console.log(this.$router)
-      // ipcRenderer.send('new-msg', 'xxx发来一一条消息')
-      this.$router.push('/index')
+      Electron.ipcRenderer.send('changWindowSize', 'xxx发来一一条消息')
+      this.$router.push('/monitor')
     }
   }
 }
