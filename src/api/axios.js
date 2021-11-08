@@ -6,7 +6,7 @@ import router from '../router';
 if (process.env.NODE_ENV === 'development') {
   axios.defaults.baseURL = 'api';
 } else if (process.env.NODE_ENV === 'production') {
-  axios.defaults.baseURL = 'https://xxxxxxxxxx/index/';
+  axios.defaults.baseURL = 'http://188.131.164.41:3010';
 }
 
 

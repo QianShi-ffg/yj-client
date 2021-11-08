@@ -1,7 +1,6 @@
 <template>
   <div class="kuang">
     <div class="top">
-      <div class="header"></div>
       <div class="content">
         <ul ref="ul">
           <li
@@ -9,9 +8,16 @@
             :class="item.uuid === uuid ? 'right' : 'left'"
             :key="`item${i}`"
             :id="`liText${i}`"
-            v-html="item.text"
           >
-            <!-- {{ show(item, i) }} -->
+            <span class="chatSpan">
+              <img
+                class="failSend"
+                :src="require('assets/icon/gantanhao.svg')"
+                alt=""
+                v-show="item.uuid === uuid && item.failSend"
+              />
+              <span v-html="item.text"></span>
+            </span>
           </li>
         </ul>
       </div>
@@ -50,34 +56,24 @@ export default {
     }
   },
   mounted() {
-    this.socket = new WebSocket('ws://192.73.0.211:3010')
-    // this.socket = new WebSocket('ws://188.131.164.41:3010')
     this.init()
     console.log(555)
-    this.uuid = `15666${parseInt(Math.random() * 10000000)}`
+    this.uuid = sessionStorage.getItem('uuid')
+    // this.uuid = `15666${parseInt(Math.random() * 10000000)}`
   },
   beforeRouteUpdate(to, from, next) {
     console.log(to)
+    this.socket.close()
+    // this.socket.send('连接关闭')
+    console.log('连接关闭')
     this.otherId = to.params.id //路由携带的不同参数
     this.init() //在mounted调用的methods里的方法
-    this.socket.onclose = () => {
-      console.log('连接关闭')
-    }
-    next()
-  },
-  beforeRouteLeave(to, from, next) {
-    console.log(to)
-    this.socket.onclose = () => {
-      console.log('连接关闭')
-    }
-    // this.socket.addEventListener('close', (event) => {
-    //   console.log('socket is close', event)
-    //   this.socket.send('aa')
-    // })
     next()
   },
   methods: {
     init() {
+      // this.socket = new WebSocket('ws://192.73.0.211:3010')
+      this.socket = new WebSocket('ws://188.131.164.41:3010')
       this.socket.addEventListener('open', (event) => {
         console.log('socket is open', event)
         this.socket.send(
@@ -102,7 +98,6 @@ export default {
 
       window.onresize = () => {
         return (() => {
-          console.log(document.getElementsByTagName('ul'))
           const li = document.getElementsByTagName('ul')[0]
           this.liWidth = li.clientWidth - 40
         })()
@@ -115,6 +110,7 @@ export default {
       })
     },
     async refresh(value) {
+      console.log(value)
       await this.show(value)
       this.messageList.push(value)
       this.clean = true
@@ -123,7 +119,7 @@ export default {
       console.log(value)
       let spanSty = [
         'display: inline-block;',
-        'max-width: 65%;',
+        'max-width: 94%;',
         // 'height: 100%;',
         'padding: 10px 12px;',
         'text-align: left;',
@@ -155,7 +151,7 @@ export default {
 .kuang {
   // margin: 0 auto;
   position: relative;
-  width: calc(100% - 200px);
+  width: 100%;
   height: 100%;
   overflow: hidden;
   // background: #ccc;
@@ -164,16 +160,9 @@ export default {
     box-sizing: border-box;
     border-bottom: 1px solid #ececec;
     // background-color: rgb(248, 247, 245);
-    .header {
-      height: 50px;
-      width: 100%;
-      box-sizing: border-box;
-      border-bottom: 1px solid #ececec;
-      // background: #fff;
-    }
     .content {
       width: 100%;
-      height: calc(100% - 50px);
+      height: 100%;
       overflow-y: auto;
       background: #f5f5f5;
       &::-webkit-scrollbar {
@@ -198,53 +187,61 @@ export default {
           border: none;
           // padding-left: 20px;
           // text-align: left;
-          span.spansty {
-            display: inline-block;
-            // width: 65%;
-            max-width: 65%;
-            height: 100%;
-            padding: 10px 12px;
-            text-align: left;
-            background: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 1px 1px rgb(238, 238, 238);
-            word-wrap: break-word;
-            word-break: normal;
-            overflow: hidden;
-          }
+          // span.spansty {
+          //   display: inline-block;
+          //   // width: 65%;
+          //   max-width: 65%;
+          //   height: 100%;
+          //   padding: 10px 12px;
+          //   text-align: left;
+          //   background: #fff;
+          //   border-radius: 5px;
+          //   box-shadow: 0 0 1px 1px rgb(238, 238, 238);
+          //   word-wrap: break-word;
+          //   word-break: normal;
+          //   overflow: hidden;
+          // }
           &.left {
             text-align: left;
-            span.spansty {
-              display: inline-block;
-              // width: 65%;
-              max-width: 65%;
-              height: 100%;
-              padding: 10px 12px;
-              text-align: left;
-              background: #fff;
-              border-radius: 5px;
-              box-shadow: 0 0 1px 1px rgb(238, 238, 238);
-              word-wrap: break-word;
-              word-break: normal;
-              overflow: hidden;
-            }
+            // span.spansty {
+            //   display: inline-block;
+            //   // width: 65%;
+            //   max-width: 65%;
+            //   height: 100%;
+            //   padding: 10px 12px;
+            //   text-align: left;
+            //   background: #fff;
+            //   border-radius: 5px;
+            //   box-shadow: 0 0 1px 1px rgb(238, 238, 238);
+            //   word-wrap: break-word;
+            //   word-break: normal;
+            //   overflow: hidden;
+            // }
           }
           &.right {
             padding-right: 20px;
             text-align: right;
-            span.spansty {
+            .chatSpan {
               display: inline-block;
-              // width: 65%;
-              max-width: 65%;
               height: 100%;
-              padding: 10px 12px;
-              text-align: left;
-              background: #fff;
-              border-radius: 5px;
-              box-shadow: 0 0 1px 1px rgb(238, 238, 238);
-              word-wrap: break-word;
-              word-break: normal;
-              overflow: hidden;
+              max-width: 65%;
+              position: relative;
+              padding-left: 25px;
+              .failSend {
+                z-index: 10;
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                margin: auto;
+                display: inline-block;
+                height: 22px;
+                width: 22px;
+                border-radius: 11px;
+              }
+              span.chatContent {
+                background: #9eea6a;
+              }
             }
           }
         }
@@ -266,6 +263,7 @@ export default {
       width: 20px;
       height: 20px;
       cursor: pointer;
+      user-select: none;
       &.video {
         right: 20px;
       }

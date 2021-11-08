@@ -1,5 +1,5 @@
 <template>
-  <div class="login">
+  <div class="login" style="-webkit-app-region: no-drag">
     <div class="title">
       <i class="el-icon-close" @click="exit"></i>
     </div>
@@ -12,7 +12,7 @@
       <transition name="fade">
         <div v-show="showForm">
           <div style="margin-top: 40px">
-            <el-input v-model="user.account" placeholder="请输入账号"></el-input>
+            <el-input v-model="user.name" placeholder="请输入账号"></el-input>
             <el-input
               v-model="user.password"
               placeholder="请输入密码"
@@ -20,7 +20,7 @@
               style="margin-top: 5px"
             ></el-input>
             <el-checkbox v-model="remember">下次直接登录</el-checkbox>
-            <el-button type="primary" class="submit" @click="login">登 录</el-button>
+            <el-button type="primary" class="submit" size="mini" @click="login">登 录</el-button>
           </div>
           <div class="option">
             <el-button type="text" size="mini">注册账号</el-button>
@@ -36,6 +36,7 @@
 <script>
 // import { Remote, IpcRenderer } from '../util/preload'
 import Electron from '../util/preload'
+import ChatServer from '../api/api'
 //打印remote模块
 // console.log(IpcRenderer)
 export default {
@@ -46,7 +47,7 @@ export default {
       showLogo: false,
       showForm: false,
       user: {
-        account: '',
+        name: '',
         password: ''
       }
     }
@@ -69,10 +70,14 @@ export default {
       Electron.remote.app.quit()
       Electron.remote.getCurrentWindow().hide()
     },
-    login() {
+    async login() {
       console.log(this.$router)
-      Electron.ipcRenderer.send('changWindowSize', 'xxx发来一一条消息')
-      this.$router.push('/monitor')
+      const res = await ChatServer.login(this.user)
+      if (res.code === 200) {
+        sessionStorage.setItem('uuid', res.data.id)
+        Electron.ipcRenderer.send('changWindowSize', '登录成功')
+        this.$router.push('/monitor')
+      }
     }
   }
 }

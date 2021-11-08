@@ -43,8 +43,16 @@ async function createWindow () {
   }
 
 
-  ipcMain.on('changWindowSize', e =>
-    win.setSize(900, 550)
+  ipcMain.on('changWindowSize', () => {
+    win.setSize(960, 535)
+    win.center()
+  })
+  ipcMain.on('close', e =>
+    win.close()
+  )
+
+  ipcMain.on('minimize', e =>
+    win.minimize()
   )
 }
 
