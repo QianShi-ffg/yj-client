@@ -54,6 +54,7 @@ async function createWindow () {
   ipcMain.on('minimize', e =>
     win.minimize()
   )
+
 }
 
 // Quit when all windows are closed.

@@ -3,12 +3,6 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import router from '../router';
 
-if (process.env.NODE_ENV === 'development') {
-  axios.defaults.baseURL = 'api';
-} else if (process.env.NODE_ENV === 'production') {
-  axios.defaults.baseURL = 'http://188.131.164.41:3010';
-}
-
 
 //请求拦截器 区分了一下正常请求时与发送formdata时的请求头
 axios.interceptors.request.use((config) => {

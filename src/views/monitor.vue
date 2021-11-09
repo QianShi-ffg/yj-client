@@ -3,7 +3,17 @@
     <el-container>
       <el-aside width="335px">
         <div class="left" style="-webkit-app-region: no-drag">
-          <div class="user"></div>
+          <div class="user">
+            <img :src="require('../assets/111.png')" alt="" width="40px" height="40px" />
+            <div class="userMenu">
+              <img v-for="(item, i) in menu" :src="item" alt="" width="22px" height="22px" :key="i" />
+            </div>
+            <div class="footerMenu">
+              <img src="" alt="" width="35px" height="35px" />
+              <img src="" alt="" width="35px" height="35px" />
+              <img src="" alt="" width="35px" height="35px" />
+            </div>
+          </div>
           <div class="body">
             <header></header>
             <div class="list" v-for="(item, i) in chatList" @click="selectChat(item)" :key="item.id" :tabindex="i">
@@ -49,11 +59,18 @@
 <script>
 import Electron from '../util/preload'
 import ChatServer from '../api/api'
+import xiaoxi from '../assets/icon/xiaoxi.svg'
+import wode from '../assets/icon/wode.svg'
+import shoucang from '../assets/icon/shoucang.svg'
+import wenjian from '../assets/icon/wenjian.svg'
+import pengyouquan from '../assets/icon/pengyouquan.svg'
+import sandian from '../assets/icon/sandian.svg'
 export default {
   data() {
     return {
       chatList: [],
-      toName: ''
+      toName: '',
+      menu: [xiaoxi, wode, shoucang, wenjian, pengyouquan, sandian]
     }
   },
   mounted() {
@@ -99,17 +116,39 @@ export default {
     position: relative;
     padding-left: 60px;
     .user {
-      width: 60px;
-      height: 100%;
       position: absolute;
       left: 0;
       top: 0;
+      display: flex;
+      flex-direction: column;
+      // justify-content: space-between;
+      align-items: center;
+      padding: 40px 0 10px;
+      box-sizing: border-box;
+      width: 60px;
+      height: 100%;
       background-color: #2e2e2e;
+      .userMenu {
+        margin-top: 32px;
+        display: flex;
+        flex-direction: column;
+        img {
+          margin-bottom: 23px;
+        }
+      }
+      .footerMenu {
+        margin-top: 35px;
+        img {
+          margin-top: 15px;
+        }
+      }
     }
     .body {
       width: 100%;
       height: 100%;
+      -webkit-app-region: drag;
       header {
+        -webkit-app-region: drag;
         height: 70px;
         width: 100%;
         // background-color: #ccc;
@@ -118,6 +157,8 @@ export default {
         border: none;
       }
       .list {
+        -webkit-app-region: no-drag;
+        user-select: none;
         // border: 1px solid #ececec;
         border-left: none;
         border-right: none;
@@ -129,6 +170,7 @@ export default {
           height: 100%;
         }
         .right {
+          user-select: none;
           line-height: 60px;
           padding-left: 10px;
           box-sizing: border-box;

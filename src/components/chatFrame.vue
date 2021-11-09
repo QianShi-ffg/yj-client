@@ -48,6 +48,7 @@ export default {
       uuid: null,
       liWidth: null,
       clean: false
+      // failSend: false
     }
   },
   watch: {
@@ -72,8 +73,8 @@ export default {
   },
   methods: {
     init() {
-      // this.socket = new WebSocket('ws://192.73.0.211:3010')
-      this.socket = new WebSocket('ws://188.131.164.41:3010')
+      this.socket = new WebSocket('ws://192.73.0.211:3010')
+      // this.socket = new WebSocket('ws://188.131.164.41:3010')
       this.socket.addEventListener('open', (event) => {
         console.log('socket is open', event)
         this.socket.send(
@@ -105,7 +106,7 @@ export default {
     },
     submit(value) {
       console.log(value)
-      value.map((item) => {
+      value.map(async (item) => {
         this.socket.send(JSON.stringify(item))
       })
     },
@@ -129,15 +130,46 @@ export default {
         'word-break: normal;',
         'overflow: hidden;'
       ]
+
+      let failSend = [
+        'z-index: 10;',
+        'position: absolute;',
+        'left: 0;',
+        'top: 0;',
+        'bottom: 0;',
+        'margin: auto;',
+        'display: inline-block;',
+        'height: 22px;',
+        'width: 22px;',
+        'border-radius: 11px;'
+      ]
       if (value.uuid === this.uuid) {
         spanSty.push('background: #9eea6a;')
       } else {
         spanSty.push('background: #fff;')
       }
       if (value.nodeType === 3) {
+        // if (value.failSend) {
+        //   value.text = `<img
+        //         class="failSend"
+        //         src="${require('assets/icon/gantanhao.svg')}"
+        //         alt=""
+        //         style="${failSend.join().replaceAll(',', '')}"
+        //       /><span style="${spanSty.join().replaceAll(',', '')}">${value.text}</span>`
+        // } else {
         value.text = `<span style="${spanSty.join().replaceAll(',', '')}">${value.text}</span>`
+        // }
       } else if (value.nodeType === 1) {
-        value.text = `<img src=${value.url} width="${value.style.width > 180 ? 180 : value.style.width}px;"></img>`
+        if (value.failSend) {
+          value.text = `<img
+                class="failSend"
+                src="${require('assets/icon/gantanhao.svg')}"
+                alt=""
+                style="${failSend.join().replaceAll(',', '')}"
+              /><img src=${value.url} width="${value.style.width > 180 ? 180 : value.style.width}px;"></img>`
+        } else {
+          value.text = `<img src=${value.url} width="${value.style.width > 180 ? 180 : value.style.width}px;"></img>`
+        }
       }
     },
     textClean(value) {

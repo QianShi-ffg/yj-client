@@ -9,26 +9,21 @@
           <img src="../assets/logo.png" width="60" height="60" v-show="showLogo" />
         </transition>
       </div>
-      <transition name="fade">
-        <div v-show="showForm">
-          <div style="margin-top: 40px">
-            <el-input v-model="user.name" placeholder="请输入账号"></el-input>
-            <el-input
-              v-model="user.password"
-              placeholder="请输入密码"
-              type="password"
-              style="margin-top: 5px"
-            ></el-input>
-            <el-checkbox v-model="remember">下次直接登录</el-checkbox>
-            <el-button type="primary" class="submit" size="mini" @click="login">登 录</el-button>
-          </div>
-          <div class="option">
-            <el-button type="text" size="mini">注册账号</el-button>
-            <el-button type="text" size="mini">忘记密码</el-button>
-            <el-button type="text" size="mini">扫码登录</el-button>
-          </div>
+      <!-- <transition name="fade"> -->
+      <div v-show="showForm">
+        <div style="margin-top: 30px">
+          <el-input v-model="user.name" placeholder="请输入账号"></el-input>
+          <el-input v-model="user.password" placeholder="请输入密码" type="password" style="margin-top: 5px"></el-input>
+          <el-checkbox v-model="remember">下次直接登录</el-checkbox>
+          <el-button type="primary" class="submit" size="mini" @click="login">登 录</el-button>
         </div>
-      </transition>
+        <div class="option">
+          <el-button type="text" size="mini">注册账号</el-button>
+          <el-button type="text" size="mini">忘记密码</el-button>
+          <el-button type="text" size="mini">扫码登录</el-button>
+        </div>
+      </div>
+      <!-- </transition> -->
     </div>
   </div>
 </template>
@@ -63,11 +58,12 @@ export default {
     let that = this
     setTimeout(() => {
       that.showForm = true
-    }, 300)
+    }, 100)
   },
   methods: {
     exit() {
-      Electron.remote.app.quit()
+      // Electron.remote.app.quit()
+      Electron.ipcRenderer.send('close')
       Electron.remote.getCurrentWindow().hide()
     },
     async login() {
@@ -121,10 +117,10 @@ export default {
     // background-color: @primary;
     // border-color: @primary;
   }
-  .submit {
+  .el-button.submit {
     background-color: #24db5a;
     border-color: unset;
-
+    height: 35px;
     &:hover {
       // background-color: @primary;
       // border-color: @primary;

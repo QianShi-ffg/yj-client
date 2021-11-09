@@ -199,7 +199,7 @@ export default {
   .btn {
     position: relative;
     width: 100px;
-    height: 100%;
+    height: 90%;
     .el-button {
       position: absolute;
       bottom: 0;

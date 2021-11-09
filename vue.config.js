@@ -23,5 +23,16 @@ module.exports = {
     config.resolve.alias
       .set('@', resolve('src'))
       .set('assets', resolve('src/assets'))
+  },
+  devServer: {
+    proxy: { // 设置代理
+      '/api': {
+        target: 'http://192.73.0.211:3000',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
   }
 }
