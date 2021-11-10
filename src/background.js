@@ -44,7 +44,7 @@ async function createWindow () {
 
 
   ipcMain.on('changWindowSize', () => {
-    win.setSize(960, 535)
+    win.setSize(930, 535)
     win.center()
   })
   ipcMain.on('close', e =>
@@ -54,6 +54,15 @@ async function createWindow () {
   ipcMain.on('minimize', e =>
     win.minimize()
   )
+
+  let exePath = app.getPath('exe');
+  win.setAppDetails({
+    appId: 'com.test.app',
+    appIconPath: '../public/weiweixin.ico',
+    appIconIndex: 0,
+    relaunchDisplayName: '微微信',
+    relaunchCommand: '"' + exePath + '"', //加参数的意义是C盘program files文件夹有空格风险，导致路由错误
+  });
 
 }
 
@@ -86,6 +95,8 @@ app.on("ready", async () => {
   // }
   createWindow();
 });
+
+
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

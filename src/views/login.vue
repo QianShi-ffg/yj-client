@@ -42,8 +42,8 @@ export default {
       showLogo: false,
       showForm: false,
       user: {
-        name: '',
-        password: ''
+        name: '15666666666',
+        password: '147258'
       }
     }
   },

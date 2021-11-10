@@ -23,7 +23,8 @@
       </div>
     </div>
     <div class="actionBar">
-      <img class="emoji" :src="require('assets/icon/emoticon.svg')" alt="" />
+      <img class="emoji" :src="require('assets/icon/emoticon.svg')" alt="" @click="emojiclick" />
+      <emoji :emojiVisible="emojiVisible" @emojiVisibleClose="emojiVisibleClose"></emoji>
       <img class="file" :src="require('assets/icon/file.svg')" alt="" />
       <img class="shot" :src="require('assets/icon/screenShot.svg')" alt="" />
       <img class="video" :src="require('assets/icon/videoCall.svg')" alt="" />
@@ -34,12 +35,15 @@
 
 <script>
 import chatInputVue from '../components/chatInput.vue'
+import emoji from '../components/emoji.vue'
 export default {
   components: {
-    chatInputVue
+    chatInputVue,
+    emoji
   },
   data() {
     return {
+      emojiVisible: false,
       otherId: '',
       textarea: '',
       messageList: [],
@@ -174,6 +178,12 @@ export default {
     },
     textClean(value) {
       this.clean = value
+    },
+    emojiclick() {
+      this.emojiVisible = true
+    },
+    emojiVisibleClose(value) {
+      this.emojiVisible = value
     }
   }
 }
@@ -308,6 +318,9 @@ export default {
       &.shot {
         left: 83px;
       }
+    }
+    ::v-deep.el-dialog {
+      margin-left: 142px;
     }
   }
 }
