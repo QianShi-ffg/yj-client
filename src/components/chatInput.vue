@@ -1,6 +1,7 @@
 <template>
   <div class="bottom">
     <div
+      ref="input"
       id="input"
       :contenteditable="true"
       @paste.prevent="chatPaste($event)"
@@ -15,6 +16,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 export default {
   props: {
     uuid: String,
@@ -30,7 +32,23 @@ export default {
       keyList: []
     }
   },
+  computed: {
+    ...mapGetters('myClient', ['getCurrentEmoji', 'getIsDisplay'])
+  },
   watch: {
+    getIsDisplay(newVal) {
+      if (newVal) {
+        this.againFocus()
+        // const range = selObj.getRangeAt(0)
+        // 取消insert node 后的选中状态，将光标恢复到 insert node 后面
+        // range.collapse(false)
+        // selObj.collapseToEnd()
+        console.log(this.getCurrentEmoji)
+        const textNode = document.createTextNode(`[${this.getCurrentEmoji.value}]`)
+        this.cursorInsert(textNode)
+        this.setIsDisplay(false)
+      }
+    },
     clean(newVal) {
       if (newVal) {
         this.textarea.innerHTML = ''
@@ -39,9 +57,11 @@ export default {
     }
   },
   mounted() {
+    console.log(this.getCurrentEmoji)
     this.textarea = document.getElementById('input')
   },
   methods: {
+    ...mapActions('myClient', ['setCurrentEmoji', 'setIsDisplay']),
     async chatPaste(event) {
       const pasteRes = this.pasteText(event.clipboardData)
       if (pasteRes) {
@@ -49,6 +69,11 @@ export default {
       } else {
         await this.pasteImageFile(event.clipboardData)
       }
+    },
+    async againFocus() {
+      await this.$refs.input.focus()
+      const selObj = window.getSelection()
+      selObj.extend = 6
     },
     keyDown(event) {
       // const childNodes = event.target.childNodes

@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, Menu, ipcMain } from "electron";
+import { app, protocol, BrowserWindow, Menu, ipcMain, remote } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -10,6 +10,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
 
+console.log(BrowserWindow)
 async function createWindow () {
   // 隐藏默认菜单
   // Menu.setApplicationMenu(null)

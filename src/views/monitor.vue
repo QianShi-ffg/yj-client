@@ -6,17 +6,37 @@
           <div class="user">
             <img :src="require('../assets/111.png')" alt="" width="40px" height="40px" />
             <div class="userMenu">
-              <img v-for="(item, i) in menu" :src="item" alt="" width="22px" height="22px" :key="i" />
+              <img
+                v-for="(item, i) in menu"
+                :src="item.src"
+                alt=""
+                width="22px"
+                height="22px"
+                :key="i"
+                @click="clickMenu(item)"
+              />
             </div>
             <div class="footerMenu">
-              <img src="" alt="" width="35px" height="35px" />
-              <img src="" alt="" width="35px" height="35px" />
-              <img src="" alt="" width="35px" height="35px" />
+              <img
+                v-for="(item, i) in footerMenu"
+                :src="item.src"
+                alt=""
+                width="22px"
+                height="22px"
+                :key="i"
+                @click="clickMenu(item)"
+              />
             </div>
           </div>
           <div class="body">
             <header></header>
-            <div class="list" v-for="(item, i) in chatList" @click="selectChat(item)" :key="item.id" :tabindex="i">
+            <div
+              :id="`list${i}`"
+              class="list"
+              v-for="(item, i) in chatList"
+              @click="selectChat(item, i)"
+              :key="item.id"
+            >
               <div class="left">
                 <img src="" alt="" />
               </div>
@@ -65,12 +85,44 @@ import shoucang from '../assets/icon/shoucang.svg'
 import wenjian from '../assets/icon/wenjian.svg'
 import pengyouquan from '../assets/icon/pengyouquan.svg'
 import sandian from '../assets/icon/sandian.svg'
+import sanheng from '../assets/icon/sanheng.svg'
 export default {
   data() {
     return {
       chatList: [],
       toName: '',
-      menu: [xiaoxi, wode, shoucang, wenjian, pengyouquan, sandian]
+      menu: [
+        {
+          name: 'xiaoxi',
+          src: xiaoxi
+        },
+        {
+          name: 'wode',
+          src: wode
+        },
+        {
+          name: 'shoucang',
+          src: shoucang
+        },
+        {
+          name: 'wenjian',
+          src: wenjian
+        },
+        {
+          name: 'pengyouquan',
+          src: pengyouquan
+        },
+        {
+          name: 'sandian',
+          src: sandian
+        }
+      ],
+      footerMenu: [
+        {
+          name: 'sanheng',
+          src: sanheng
+        }
+      ]
     }
   },
   mounted() {
@@ -94,9 +146,20 @@ export default {
     close() {
       Electron.ipcRenderer.send('close')
     },
-    selectChat(item) {
+    selectChat(item, i) {
+      // this.$nextTick(() => {
+      let list = [...document.getElementsByClassName('list')]
+      list.forEach((item) => {
+        item.className = 'list'
+      })
+      let crrList = document.getElementById(`list${i}`)
+      crrList.classList.add('is_active')
+      // })
       this.$router.push({ name: 'chatFrame', params: { id: item.id } })
       this.toName = item.name
+    },
+    clickMenu(item, i) {
+      console.log(item, i)
     }
   }
 }
@@ -107,7 +170,6 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
-  // border-top: 1px solid #ececec;
   .left {
     height: 100%;
     width: 100%;
@@ -133,12 +195,14 @@ export default {
         display: flex;
         flex-direction: column;
         img {
+          cursor: pointer;
           margin-bottom: 23px;
         }
       }
       .footerMenu {
-        margin-top: 35px;
+        margin-top: 148px;
         img {
+          cursor: pointer;
           margin-top: 15px;
         }
       }
@@ -147,11 +211,12 @@ export default {
       width: 100%;
       height: 100%;
       -webkit-app-region: drag;
+      background-color: #f7f7f7;
       header {
         -webkit-app-region: drag;
         height: 70px;
         width: 100%;
-        // background-color: #ccc;
+        background-color: #f7f7f7;
         box-sizing: border-box;
         border-right: 1px solid #ececec;
         border: none;
@@ -178,9 +243,9 @@ export default {
         &:hover {
           background-color: #d9d8d8;
         }
-        &:focus {
-          background-color: #c5c4c5;
-        }
+      }
+      .list.is_active {
+        background-color: #c5c4c5;
       }
     }
   }
@@ -188,6 +253,8 @@ export default {
     padding: 0;
     height: 80px;
     position: relative;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #e7e7e7;
     // -webkit-app-region: drag;
     .title {
       position: absolute;

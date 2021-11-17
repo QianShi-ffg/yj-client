@@ -25,7 +25,10 @@
     <div class="actionBar">
       <img class="emoji" :src="require('assets/icon/emoticon.svg')" alt="" @click="emojiclick" />
       <emoji :emojiVisible="emojiVisible" @emojiVisibleClose="emojiVisibleClose"></emoji>
-      <img class="file" :src="require('assets/icon/file.svg')" alt="" />
+      <label for="openFile">
+        <img class="file" :src="require('assets/icon/file.svg')" alt="" />
+      </label>
+      <input id="openFile" type="file" style="display: none" />
       <img class="shot" :src="require('assets/icon/screenShot.svg')" alt="" />
       <img class="video" :src="require('assets/icon/videoCall.svg')" alt="" />
     </div>
@@ -180,6 +183,7 @@ export default {
       this.clean = value
     },
     emojiclick() {
+      console.log(window.getSelection(), 9666666666666)
       this.emojiVisible = true
     },
     emojiVisibleClose(value) {
