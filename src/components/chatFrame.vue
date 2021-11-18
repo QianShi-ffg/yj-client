@@ -39,6 +39,7 @@
 <script>
 import chatInputVue from '../components/chatInput.vue'
 import emoji from '../components/emoji.vue'
+import { mapActions } from 'vuex'
 export default {
   components: {
     chatInputVue,
@@ -79,6 +80,7 @@ export default {
     next()
   },
   methods: {
+    ...mapActions('myClient', ['setRange']),
     init() {
       this.socket = new WebSocket('ws://192.73.0.211:3010')
       // this.socket = new WebSocket('ws://188.131.164.41:3010')
@@ -182,9 +184,22 @@ export default {
     textClean(value) {
       this.clean = value
     },
-    emojiclick() {
-      console.log(window.getSelection(), 9666666666666)
+    async emojiclick() {
+      let range = await this.saveSelection()
+      this.setRange(range)
       this.emojiVisible = true
+    },
+    // 保存焦点位置
+    saveSelection() {
+      if (window.getSelection) {
+        let sel = window.getSelection()
+        if (sel.getRangeAt && sel.rangeCount) {
+          return sel.getRangeAt(0)
+        }
+      } else if (document.selection && document.selection.createRange) {
+        return document.selection.createRange()
+      }
+      return null
     },
     emojiVisibleClose(value) {
       this.emojiVisible = value

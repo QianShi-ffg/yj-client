@@ -6,6 +6,9 @@ const actions = {
   },
   setIsDisplay ({ commit }, playload) {
     commit(types.SET_ISDISPLAY, playload)
+  },
+  setRange ({ commit }, playload) {
+    commit(types.SET_RANGE, playload)
   }
 }
 export default actions

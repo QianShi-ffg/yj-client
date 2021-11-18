@@ -33,7 +33,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('myClient', ['getCurrentEmoji', 'getIsDisplay'])
+    ...mapGetters('myClient', ['getCurrentEmoji', 'getIsDisplay', 'getRange'])
   },
   watch: {
     getIsDisplay(newVal) {
@@ -44,9 +44,6 @@ export default {
         // range.collapse(false)
         // selObj.collapseToEnd()
         console.log(this.getCurrentEmoji)
-        const textNode = document.createTextNode(`[${this.getCurrentEmoji.value}]`)
-        this.cursorInsert(textNode)
-        this.setIsDisplay(false)
       }
     },
     clean(newVal) {
@@ -72,8 +69,10 @@ export default {
     },
     async againFocus() {
       await this.$refs.input.focus()
-      const selObj = window.getSelection()
-      selObj.extend = 6
+      await this.restoreSelection(this.getRange)
+      const textNode = document.createTextNode(`[${this.getCurrentEmoji.value}]`)
+      this.cursorInsert(textNode)
+      this.setIsDisplay(false)
     },
     keyDown(event) {
       // const childNodes = event.target.childNodes
@@ -191,6 +190,18 @@ export default {
         }
       })
       this.$emit('submit', this.textList)
+    },
+    // 恢复焦点位置
+    restoreSelection(range) {
+      if (range) {
+        if (window.getSelection) {
+          let sel = window.getSelection()
+          sel.removeAllRanges()
+          sel.addRange(range)
+        } else if (document.selection && range.select) {
+          range.select()
+        }
+      }
     }
   }
 }

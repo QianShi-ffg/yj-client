@@ -6,6 +6,9 @@ const mutations = {
   },
   [types.SET_ISDISPLAY] (state, playload) {
     state.isDisplay = playload
+  },
+  [types.SET_RANGE] (state, playload) {
+    state.range = playload
   }
 }
 
