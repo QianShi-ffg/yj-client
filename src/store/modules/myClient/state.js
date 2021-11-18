@@ -1,7 +1,8 @@
 const state = {
   currentEmoji: {},
   isDisplay: false,
-  range: null
-}
+  range: null,
+  cleanMessage: false,
+};
 
-export default state
+export default state;

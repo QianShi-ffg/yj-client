@@ -5,6 +5,7 @@
 </template>
 
 <style lang="scss">
+@import "@/assets/style/emoji.scss";
 html,
 body {
   width: 100%;

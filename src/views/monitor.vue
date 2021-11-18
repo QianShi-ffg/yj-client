@@ -4,7 +4,12 @@
       <el-aside width="335px">
         <div class="left" style="-webkit-app-region: no-drag">
           <div class="user">
-            <img :src="require('../assets/111.png')" alt="" width="40px" height="40px" />
+            <img
+              :src="require('../assets/111.png')"
+              alt=""
+              width="40px"
+              height="40px"
+            />
             <div class="userMenu">
               <img
                 v-for="(item, i) in menu"
@@ -38,7 +43,7 @@
               :key="item.id"
             >
               <div class="left">
-                <img src="" alt="" />
+                <img :src="require('../assets/111.png')" alt="" />
               </div>
               <div class="right">
                 <span>{{ item.name }}</span>
@@ -50,10 +55,17 @@
       <el-container>
         <el-header height="70px"
           ><nav class="toolbar">
-            <span @click="minimize"><img :src="require('../assets/icon/zuixiaohua.svg')" alt="" /></span>
-            <span @click="maximize"><img :src="require('../assets/icon/zuidahua.svg')" alt="" /></span>
+            <span @click="minimize"
+              ><img :src="require('../assets/icon/zuixiaohua.svg')" alt=""
+            /></span>
+            <span @click="maximize"
+              ><img :src="require('../assets/icon/zuidahua.svg')" alt=""
+            /></span>
             <span @click="close" class="close"
-              ><img :src="require('../assets/icon/guanbi.svg')" alt="" @click="close"
+              ><img
+                :src="require('../assets/icon/guanbi.svg')"
+                alt=""
+                @click="close"
             /></span>
           </nav>
           <div class="title">{{ toName }}</div>
@@ -77,92 +89,102 @@
 </template>
 
 <script>
-import Electron from '../util/preload'
-import ChatServer from '../api/api'
-import xiaoxi from '../assets/icon/xiaoxi.svg'
-import wode from '../assets/icon/wode.svg'
-import shoucang from '../assets/icon/shoucang.svg'
-import wenjian from '../assets/icon/wenjian.svg'
-import pengyouquan from '../assets/icon/pengyouquan.svg'
-import sandian from '../assets/icon/sandian.svg'
-import sanheng from '../assets/icon/sanheng.svg'
+import { mapActions } from "vuex";
+import Electron from "../util/preload";
+import ChatServer from "../api/api";
+import xiaoxi from "../assets/icon/xiaoxi.svg";
+import wode from "../assets/icon/wode.svg";
+import shoucang from "../assets/icon/shoucang.svg";
+import wenjian from "../assets/icon/wenjian.svg";
+import pengyouquan from "../assets/icon/pengyouquan.svg";
+import sandian from "../assets/icon/sandian.svg";
+import sanheng from "../assets/icon/sanheng.svg";
 export default {
   data() {
     return {
+      currentListItem: "",
       chatList: [],
-      toName: '',
+      toName: "",
       menu: [
         {
-          name: 'xiaoxi',
-          src: xiaoxi
+          name: "xiaoxi",
+          src: xiaoxi,
         },
         {
-          name: 'wode',
-          src: wode
+          name: "wode",
+          src: wode,
         },
         {
-          name: 'shoucang',
-          src: shoucang
+          name: "shoucang",
+          src: shoucang,
         },
         {
-          name: 'wenjian',
-          src: wenjian
+          name: "wenjian",
+          src: wenjian,
         },
         {
-          name: 'pengyouquan',
-          src: pengyouquan
+          name: "pengyouquan",
+          src: pengyouquan,
         },
         {
-          name: 'sandian',
-          src: sandian
-        }
+          name: "sandian",
+          src: sandian,
+        },
       ],
       footerMenu: [
         {
-          name: 'sanheng',
-          src: sanheng
-        }
-      ]
-    }
+          name: "sanheng",
+          src: sanheng,
+        },
+      ],
+    };
   },
   mounted() {
-    this.init()
+    this.init();
   },
   methods: {
+    ...mapActions("myClient", ["setCleanMessage"]),
     async init() {
-      const res = await ChatServer.getChatList()
+      const res = await ChatServer.getChatList();
       if (res.code === 200) {
         this.chatList = res.data.filter((item) => {
-          return item.id !== sessionStorage.getItem('uuid')
-        })
+          return item.id !== sessionStorage.getItem("uuid");
+        });
       }
     },
     minimize() {
-      Electron.ipcRenderer.send('minimize')
+      Electron.ipcRenderer.send("minimize");
     },
     maximize() {
       // Electron.ipcRenderer.send()
     },
     close() {
-      Electron.ipcRenderer.send('close')
+      Electron.ipcRenderer.send("close");
     },
     selectChat(item, i) {
-      // this.$nextTick(() => {
-      let list = [...document.getElementsByClassName('list')]
+      let list = [...document.getElementsByClassName("list")];
       list.forEach((item) => {
-        item.className = 'list'
-      })
-      let crrList = document.getElementById(`list${i}`)
-      crrList.classList.add('is_active')
-      // })
-      this.$router.push({ name: 'chatFrame', params: { id: item.id } })
-      this.toName = item.name
+        item.className = "list";
+      });
+      let crrList = document.getElementById(`list${i}`);
+      crrList.classList.add("is_active");
+      this.$router.push({ name: "chatFrame", params: { id: item.id } });
+      this.toName = item.name;
+      this.setCleanMessage(true);
+      // 再次请求当前数据
+      //-----------待开发
+      let aaa = setTimeout(() => {
+        this.setCleanMessage(false);
+        clearTimeout(aaa);
+      }, 1000);
+      //
     },
     clickMenu(item, i) {
-      console.log(item, i)
-    }
-  }
-}
+      // currentListItem
+      console.log(item, i);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -231,14 +253,26 @@ export default {
         display: flex;
         background: #e6e5e5;
         .left {
+          border: none;
+          padding: 0;
           width: 60px;
           height: 100%;
+          line-height: 100px;
+          img {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+          }
         }
         .right {
           user-select: none;
           line-height: 60px;
           padding-left: 10px;
           box-sizing: border-box;
+          span {
+            // font-weight: 550;
+            color: #000;
+          }
         }
         &:hover {
           background-color: #d9d8d8;
