@@ -8,6 +8,7 @@
       @keydown="keyDown($event)"
       style="width: 100%; min-hight: 70px; max-height: 100px"
       :spellcheck="false"
+      @blur="blur"
     ></div>
     <div class="btn">
       <el-button type="success" size="mini" @click="beforeSubmit"
@@ -71,7 +72,7 @@ export default {
     this.textarea = document.getElementById("input");
   },
   methods: {
-    ...mapActions("myClient", ["setCurrentEmoji", "setIsDisplay"]),
+    ...mapActions("myClient", ["setCurrentEmoji", "setIsDisplay", "setRange"]),
     async chatPaste(event) {
       const pasteRes = this.pasteText(event.clipboardData);
       if (pasteRes) {
@@ -239,6 +240,27 @@ export default {
         }
       });
       this.$emit("submit", this.textList);
+    },
+    // 当聊天输入框失去焦点时保存焦点信息
+    async blur() {
+      let range = await this.saveSelection();
+      console.log(range, 21111);
+      this.setRange(range);
+    },
+    // 保存焦点位置
+    saveSelection() {
+      console.log(window.getSelection());
+      if (window.getSelection) {
+        let sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+          return sel.getRangeAt(0);
+        }
+      }
+      //  else if (document.selection && document.selection.createRange) {
+      //   console.log(223333);
+      //   return document.selection.createRange();
+      // }
+      return null;
     },
     // 恢复焦点位置
     restoreSelection(range) {

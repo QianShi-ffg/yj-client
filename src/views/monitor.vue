@@ -222,7 +222,8 @@ export default {
         }
       }
       .footerMenu {
-        margin-top: 148px;
+        position: absolute;
+        bottom: 10px;
         img {
           cursor: pointer;
           margin-top: 15px;
@@ -331,6 +332,11 @@ export default {
   .el-main {
     padding: 0;
     -webkit-app-region: no-drag;
+    background-color: #f5f5f5;
+    background-image: url("../assets/xiaoxi.png");
+    background-repeat: no-repeat;
+    background-size: 14%;
+    background-position: 50% 46%;
   }
 }
 .spansty {

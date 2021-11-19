@@ -233,9 +233,6 @@ export default {
       this.clean = value;
     },
     async emojiclick() {
-      let range = await this.saveSelection();
-      console.log(range, 21111);
-      this.setRange(range);
       this.emojiVisible = true;
     },
     // 保存焦点位置
@@ -246,11 +243,10 @@ export default {
         if (sel.getRangeAt && sel.rangeCount) {
           return sel.getRangeAt(0);
         }
+      } else if (document.selection && document.selection.createRange) {
+        console.log(223333);
+        return document.selection.createRange();
       }
-      //  else if (document.selection && document.selection.createRange) {
-      //   console.log(223333);
-      //   return document.selection.createRange();
-      // }
       return null;
     },
     emojiVisibleClose(value) {
