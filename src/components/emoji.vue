@@ -1,13 +1,12 @@
 <template>
   <el-dialog
     title=""
-    :visible.sync="emojiVisible"
-    width="450px"
-    height="366px"
+    :visible.sync="emoji"
+    width="360px"
     :before-close="close"
     :modal="false"
     :show-close="false"
-    top="1.5vh"
+    top="15.5vh"
   >
     <el-card class="box-card">
       <div
@@ -29,6 +28,7 @@
 import { mapGetters, mapActions } from "vuex";
 import emojiMap from "../util/emoji";
 export default {
+  name: 'chatEmoji',
   props: { emojiVisible: Boolean },
   data() {
     return {
@@ -37,6 +37,9 @@ export default {
   },
   computed: {
     ...mapGetters("myClient", ["getCurrentEmoji", "getIsDisplay"]),
+    emoji(){
+      return this.emojiVisible
+    }
   },
   mounted() {
     console.log(emojiMap, 56666);
@@ -74,12 +77,13 @@ export default {
   margin-left: 142px;
   border-radius: 10px;
   box-shadow: unset;
+  left: 48px;
   filter: drop-shadow(0 2px 8px rgb(192, 192, 192));
   &::after {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -33px;
+    bottom: -28px;
     margin: auto;
     display: inline-block;
     content: "";
@@ -109,12 +113,12 @@ export default {
       .el-card__body {
         display: grid;
         grid-template-columns: repeat(8, 40px);
-        grid-column-gap: 13px;
-        grid-row-gap: 13px;
+        grid-column-gap: 0;
+        grid-row-gap: 0;
         flex-wrap: wrap;
         align-content: flex-start;
         padding: 15px 20px;
-        height: 305px;
+        height: 212px;
         box-sizing: border-box;
         overflow-y: scroll;
         .wwxface {

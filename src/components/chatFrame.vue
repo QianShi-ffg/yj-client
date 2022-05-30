@@ -103,7 +103,7 @@ export default {
   methods: {
     ...mapActions("myClient", ["setRange"]),
     init() {
-      this.socket = new WebSocket("ws://192.73.0.211:3010");
+      this.socket = new WebSocket("ws://localhost:3010");
       // this.socket = new WebSocket('ws://188.131.164.41:3010')
       this.socket.addEventListener("open", (event) => {
         console.log("socket is open", event);

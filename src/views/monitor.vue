@@ -100,6 +100,7 @@ import pengyouquan from "../assets/icon/pengyouquan.svg";
 import sandian from "../assets/icon/sandian.svg";
 import sanheng from "../assets/icon/sanheng.svg";
 export default {
+  name: 'chatMonitor',
   data() {
     return {
       currentListItem: "",

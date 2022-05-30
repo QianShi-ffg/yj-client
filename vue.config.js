@@ -1,8 +1,10 @@
+const { defineConfig } = require('@vue/cli-service')
 const path = require('path');
 function resolve (dir) {
   return path.join(__dirname, dir)
 }
-module.exports = {
+module.exports = defineConfig({
+  transpileDependencies: true,
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
@@ -50,16 +52,54 @@ module.exports = {
     config.resolve.alias
       .set('@', resolve('src'))
       .set('assets', resolve('src/assets'))
+    config.module
+      .rule("vue")
+      .use("vue-loader")
+      .tap((options) => ({
+        ...options,
+      compilerOptions: {
+        // 忽略自定义标签警告 vue3 app.config.compilerOptions.isCustomElement 配置有问题
+        isCustomElement: (tag) => {
+          return ["xml", "block", "mutation", "category"].includes(tag)
+        },
+      },
+    }))
   },
   devServer: {
     proxy: { // 设置代理
       '/api': {
-        target: 'http://192.73.0.211:3000',
+        target: 'http://localhost:3000',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''
         }
       }
     }
+  },
+  configureWebpack: {
+    resolve: {
+      fallback: {
+        path: require.resolve("path-browserify"),
+        stream: require.resolve("readable-stream"),
+        crypto: require.resolve("crypto-browserify"),
+        perf_hooks: false,
+        module: false,
+        "@blueprintjs/core": false,
+        "@blueprintjs/icons": false,
+        domain: false,
+        fs: false,
+        pnpapi: false,
+        punycode: false,
+      }
+    },
+    module: {
+      rules: [
+        {
+          test: /\.mjs$/,
+          include: /node_modules/,
+          type: "javascript/auto",
+        },
+      ],
+    }
   }
-}
+})
