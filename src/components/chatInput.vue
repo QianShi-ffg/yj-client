@@ -85,20 +85,23 @@ export default {
       await this.$refs.input.focus();
       await this.restoreSelection(this.getRange);
       console.log(this.getCurrentEmoji);
-      let oImage = await this.addImg();
-      this.cursorInsert(oImage);
+      const textNode = document.createTextNode(`[${this.getCurrentEmoji.value}]`)
+      this.cursorInsert(textNode)
+      // 将emoji变为图片显示在输入框中
+      // let oImage = await this.addImg();
+      // this.cursorInsert(oImage);
       this.setIsDisplay(false);
     },
     // 点击emoji添加img
-    addImg() {
-      const oImage = new Image(24, 24);
-      oImage.style.display = "inline-block";
-      let src = `${this.getCurrentEmoji.id}.png`;
-      oImage.src = require("../assets/emoji/" + src);
-      oImage.setAttribute("data-title", `[${this.getCurrentEmoji.value}]`);
-      // oImage.dataTitle = `[${this.getCurrentEmoji.value}]`;
-      return oImage;
-    },
+    // addImg() {
+    //   const oImage = new Image(24, 24);
+    //   oImage.style.display = "inline-block";
+    //   let src = `${this.getCurrentEmoji.id}.png`;
+    //   oImage.src = require("../assets/emoji/" + src);
+    //   oImage.setAttribute("data-title", `[${this.getCurrentEmoji.value}]`);
+    //   oImage.dataTitle = `[${this.getCurrentEmoji.value}]`;
+    //   return oImage;
+    // },
     keyDown(event) {
       // const childNodes = event.target.childNodes
       // this.emitChange(childNodes)
@@ -293,7 +296,7 @@ export default {
     overflow-y: auto;
     border: none;
     resize: none;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 400;
     text-align: left;
     padding: 0 10px 0 5px;
