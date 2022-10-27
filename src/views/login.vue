@@ -35,7 +35,7 @@ import ChatServer from '../api/api'
 //打印remote模块
 // console.log(IpcRenderer)
 export default {
-  name: 'login',
+  name: 'chatLogin',
   data() {
     return {
       remember: false,

@@ -89,8 +89,7 @@
 </template>
 
 <script>
-import { reactive, onMounted, toRefs } from "@vue/composition-api";
-// import { mapActions } from "vuex";
+import { mapActions } from "vuex";
 import Electron from "../util/preload";
 import ChatServer from "../api/api";
 import xiaoxi from "../assets/icon/xiaoxi.svg";
@@ -100,11 +99,10 @@ import wenjian from "../assets/icon/wenjian.svg";
 import pengyouquan from "../assets/icon/pengyouquan.svg";
 import sandian from "../assets/icon/sandian.svg";
 import sanheng from "../assets/icon/sanheng.svg";
-
 export default {
-  setup(props, ctx) {
-    console.log(ctx.root.$store, ctx.root.$router);
-    const data = reactive({
+  name: 'chatMonitor',
+  data() {
+    return {
       currentListItem: "",
       chatList: [],
       toName: "",
@@ -140,149 +138,53 @@ export default {
           src: sanheng,
         },
       ],
-    });
-    onMounted(() => {
-      init();
-    });
-    const init = async () => {
+    };
+  },
+  mounted() {
+    this.init();
+  },
+  methods: {
+    ...mapActions("myClient", ["setCleanMessage"]),
+    async init() {
       const res = await ChatServer.getChatList();
       if (res.code === 200) {
-        data.chatList = res.data.filter((item) => {
+        this.chatList = res.data.filter((item) => {
           return item.id !== sessionStorage.getItem("uuid");
         });
       }
-    };
-    const minimize = () => {
+    },
+    minimize() {
       Electron.ipcRenderer.send("minimize");
-    };
-    const maximize = () => {
+    },
+    maximize() {
       // Electron.ipcRenderer.send()
-    };
-    const close = () => {
+    },
+    close() {
       Electron.ipcRenderer.send("close");
-    };
-    const selectChat = (item, i) => {
+    },
+    selectChat(item, i) {
       let list = [...document.getElementsByClassName("list")];
       list.forEach((item) => {
         item.className = "list";
       });
       let crrList = document.getElementById(`list${i}`);
       crrList.classList.add("is_active");
-      ctx.root.$router.push({ name: "chatFrame", params: { id: item.id } });
-      data.toName = item.name;
-      ctx.root.$store.dispatch("myClient/setCleanMessage", {
-        cleanMessage: true,
-      });
-      // this.setCleanMessage(true);
+      this.$router.push({ name: "chatFrame", params: { id: item.id } });
+      this.toName = item.name;
+      this.setCleanMessage(true);
       // 再次请求当前数据
       //-----------待开发
       let aaa = setTimeout(() => {
-        ctx.root.$store.dispatch("myClient/setCleanMessage", {
-          cleanMessage: false,
-        });
-        // this.setCleanMessage(false);
+        this.setCleanMessage(false);
         clearTimeout(aaa);
       }, 1000);
       //
-    };
-    const clickMenu = (item, i) => {
+    },
+    clickMenu(item, i) {
       // currentListItem
       console.log(item, i);
-    };
-    return {
-      ...toRefs(data),
-      init,
-      minimize,
-      maximize,
-      close,
-      selectChat,
-      clickMenu,
-    };
+    },
   },
-  //   data() {
-  //     return {
-  //       currentListItem: "",
-  //       chatList: [],
-  //       toName: "",
-  //       menu: [
-  //         {
-  //           name: "xiaoxi",
-  //           src: xiaoxi,
-  //         },
-  //         {
-  //           name: "wode",
-  //           src: wode,
-  //         },
-  //         {
-  //           name: "shoucang",
-  //           src: shoucang,
-  //         },
-  //         {
-  //           name: "wenjian",
-  //           src: wenjian,
-  //         },
-  //         {
-  //           name: "pengyouquan",
-  //           src: pengyouquan,
-  //         },
-  //         {
-  //           name: "sandian",
-  //           src: sandian,
-  //         },
-  //       ],
-  //       footerMenu: [
-  //         {
-  //           name: "sanheng",
-  //           src: sanheng,
-  //         },
-  //       ],
-  //     };
-  //   },
-  //   mounted() {
-  //     this.init();
-  //   },
-  //   methods: {
-  //     ...mapActions("myClient", ["setCleanMessage"]),
-  //     async init() {
-  //       const res = await ChatServer.getChatList();
-  //       if (res.code === 200) {
-  //         this.chatList = res.data.filter((item) => {
-  //           return item.id !== sessionStorage.getItem("uuid");
-  //         });
-  //       }
-  //     },
-  //     minimize() {
-  //       Electron.ipcRenderer.send("minimize");
-  //     },
-  //     maximize() {
-  //       // Electron.ipcRenderer.send()
-  //     },
-  //     close() {
-  //       Electron.ipcRenderer.send("close");
-  //     },
-  //     selectChat(item, i) {
-  //       let list = [...document.getElementsByClassName("list")];
-  //       list.forEach((item) => {
-  //         item.className = "list";
-  //       });
-  //       let crrList = document.getElementById(`list${i}`);
-  //       crrList.classList.add("is_active");
-  //       this.$router.push({ name: "chatFrame", params: { id: item.id } });
-  //       this.toName = item.name;
-  //       this.setCleanMessage(true);
-  //       // 再次请求当前数据
-  //       //-----------待开发
-  //       let aaa = setTimeout(() => {
-  //         this.setCleanMessage(false);
-  //         clearTimeout(aaa);
-  //       }, 1000);
-  //       //
-  //     },
-  //     clickMenu(item, i) {
-  //       // currentListItem
-  //       console.log(item, i);
-  //     },
-  //   },
 };
 </script>
 
