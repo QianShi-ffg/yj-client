@@ -89,9 +89,8 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import Electron from "../util/preload";
-import ChatServer from "../api/api";
+// import { mapActions } from "vuex";
+import { getChatList } from "../api/api";
 import xiaoxi from "../assets/icon/xiaoxi.svg";
 import wode from "../assets/icon/wode.svg";
 import shoucang from "../assets/icon/shoucang.svg";
@@ -144,7 +143,7 @@ export default {
     this.init();
   },
   methods: {
-    ...mapActions("myClient", ["setCleanMessage"]),
+    // ...mapActions("myClient", ["setCleanMessage"]),
     async init() {
       const res = await ChatServer.getChatList();
       if (res.code === 200) {
@@ -154,13 +153,13 @@ export default {
       }
     },
     minimize() {
-      Electron.ipcRenderer.send("minimize");
+      // Electron.ipcRenderer.send("minimize");
     },
     maximize() {
       // Electron.ipcRenderer.send()
     },
     close() {
-      Electron.ipcRenderer.send("close");
+      // Electron.ipcRenderer.send("close");
     },
     selectChat(item, i) {
       let list = [...document.getElementsByClassName("list")];
@@ -171,11 +170,11 @@ export default {
       crrList.classList.add("is_active");
       this.$router.push({ name: "chatFrame", params: { id: item.id } });
       this.toName = item.name;
-      this.setCleanMessage(true);
+      // this.setCleanMessage(true);
       // 再次请求当前数据
       //-----------待开发
       let aaa = setTimeout(() => {
-        this.setCleanMessage(false);
+        // this.setCleanMessage(false);
         clearTimeout(aaa);
       }, 1000);
       //

@@ -30,8 +30,8 @@
 
 <script>
 // import { Remote, IpcRenderer } from '../util/preload'
-import Electron from '../util/preload'
-import ChatServer from '../api/api'
+import { ipcRenderer } from 'electron'
+import { ChatServer } from '../api/api'
 //打印remote模块
 // console.log(IpcRenderer)
 export default {
@@ -48,12 +48,12 @@ export default {
     }
   },
   beforeCreate() {
-    console.log(666)
-    Electron.remote.getCurrentWebContents().closeDevTools()
-    Electron.remote.getCurrentWindow().setSize(250, 350, false)
+    // console.log(666)
+    // Electron.remote.getCurrentWebContents().closeDevTools()
+    // Electron.remote.getCurrentWindow().setSize(250, 350, false)
   },
   mounted() {
-    Electron.remote.getCurrentWindow().setSize(250, 350, false)
+    // Electron.remote.getCurrentWindow().setSize(250, 350, false)
     this.showLogo = true
     let that = this
     setTimeout(() => {
@@ -63,17 +63,18 @@ export default {
   methods: {
     exit() {
       // Electron.remote.app.quit()
-      Electron.ipcRenderer.send('close')
-      Electron.remote.getCurrentWindow().hide()
+      // Electron.ipcRenderer.send('close')
+      // Electron.remote.getCurrentWindow().hide()
     },
     async login() {
       console.log(this.$router)
-      const res = await ChatServer.login(this.user)
-      if (res.code === 200) {
-        sessionStorage.setItem('uuid', res.data.id)
-        Electron.ipcRenderer.send('changWindowSize', '登录成功')
-        this.$router.push('/monitor')
-      }
+      // const res = await ChatServer.login(this.user)
+      // if (res.code === 200) {
+      //   sessionStorage.setItem('uuid', res.data.id)
+      //   // Electron.ipcRenderer.send('changWindowSize', '登录成功')
+      //   this.$router.push('/monitor')
+      // }
+      ipcRenderer.send('changWindowSize', '登录成功')
     }
   }
 }
@@ -82,7 +83,9 @@ export default {
 <style scoped lang="scss">
 // @import '@/assets/style/theme';
 .login {
+  padding: 20px;
   height: 100%;
+  box-sizing: border-box;
   // width: 300px;
   // max-width: 300px;
   // min-width: 300px;
@@ -98,7 +101,6 @@ export default {
 }
 ::v-deep .body {
   display: inline-block;
-  padding: 0 20px;
   min-width: 210px;
   height: 100%;
   // background-color: @grayBgc;
